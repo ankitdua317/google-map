@@ -1,0 +1,186 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+  
+     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
+    <style>
+    html{
+    	background-size: cover;
+    }
+      #map {
+        width: 100%;
+        height: 400px;
+        background-color: grey;
+      }
+
+      #body {
+  background-image: url("https://crystalseye.files.wordpress.com/2011/08/dsc_0724.jpg");
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+.jumbotron {
+  background: #222;
+  width: 60%;
+  margin: auto;
+  margin-top: 30px;
+  padding-top: 10px;
+}
+
+.jumbotron .title {
+  font-family: "Georgia";
+  color: #FFFFFF;
+  padding-top: 40px;
+  padding-bottom: 20px;
+}
+
+.jumbotron .weather {
+  color: #FFFFFF;
+}
+
+p.temp-type {
+  padding-top: 10px;
+  cursor: pointer;
+  color: #FFFFFF;
+}
+
+h2 {
+  font-size: 30px;
+}
+
+h3 {
+  color: #FFFFFF;
+  margin: 6px;
+  font-size: 20px
+}
+
+
+    </style>
+    <meta charset="UTF-8">
+	<title>Google Map</title>
+  </head>
+  <body>
+
+		<div class="row">
+			<div class="col-md-6 " id="body">
+				 
+   				<div class="container" >
+    <div class="jumbotron" class="justify-content-between">
+      <div class="row">
+        <h2 class="text-center title">Today's Weather :</h2>
+      </div>
+      <div class="row">
+        <h2 id="weather-location" class="text-center weather"></h2>
+      </div>
+      <div class="row">
+      	<div id="icon" style="font-size:20px;"></div>
+        <h2 id="weather-current" class="text-center weather"></h2>
+      </div>
+       <div class="row">
+  
+        <h3 id="summary" class="text-center weather"></h3>
+      </div>
+      <div class="row">
+        <h3 id="wind" class="text-center weather"></h3>
+        
+      </div>
+    </div>
+    <div></div>
+    </div>
+			</div>
+
+
+			<div class="col-md-5 " style="margin-left:-15px;">
+    			<div id="map" style="margin-left:0px;"></div>	
+
+			</div>
+		</div>
+	
+
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.js"></script>
+    
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCJA0GDq1KLhn0kvvQzCrXXWpT-D-t03ik&callback=initMap"></script>
+   
+    
+    
+    <script>
+      function initMap() 
+    {
+      	
+      	var longitude;
+        var uluru = {lat: 20.5937, lng: 78.9629};
+        var map = new google.maps.Map(document.getElementById('map'), {
+          zoom: 4,
+          center: uluru
+        });
+        var marker = new google.maps.Marker({
+          position: uluru,
+          map: map
+        });
+
+		google.maps.event.addListener(map,'click',function(event) 
+		{
+                 // document.getElementById('latlongclicked').value = event.latLng.lat();
+                 // document.getElementById('lotlongclicked').value =  event.latLng.lng();    // ASK FUNCTION DOUBT AND OTHER SCRIPT(How to 																				access it outside)
+                 var x= event.latLng.lat();
+                 var y= event.latLng.lng();
+                 uluruu = {lat : x, lng : y};
+				 var marker = new google.maps.Marker({
+          				position: uluruu,
+          				map: map
+        			});
+
+				var clientId = '824574d36911eae2397be86330301aaa';
+				var endpoint = 'https://api.darksky.net/forecast/';
+				var parameters = '/'+x+','+y;
+				var Data= [];
+				var url = endpoint + clientId + parameters ;		
+					function AjaxRequest(url,callback){
+						$.ajax({ url: url, dataType: 'jsonp', success: function(data){
+							callback(data);            
+						}})
+					}
+
+					AjaxRequest(url, function(d){
+						console.log(d);
+						$("#weather-location").text(d.timezone);
+						$("#weather-current").text(d.currently.temperature+' F');
+						$("#summary").text(d.currently.summary);
+						$("#wind").text("Wind Speed : "+d.currently.windSpeed+" knots");
+						var x = d.currently.icon;
+						// document.getElementById('humidity').value = d.currently.humidity;
+						// document.getElementById('ws').value = d.currently.windSpeed;
+						var o;
+						if(x==="clear-day")
+							o= "01d";
+						else if(x==="clear-night")
+							o= "01n";
+						else if(x==="rain")
+							o= "10d";
+						else if(x==="snow")
+							o= "13d";
+						else if(x==="sleet")
+							o= "13d";
+						else if(x==="wind")
+							o= "50d";
+						else if(x==="fog")
+							o= "50n";
+						else if(x==="cloudy")
+							o= "02d";
+						else if(x==="partly-cloudy-day")
+							o= "04d";
+						else if(x==="partly-cloudy-night")
+							o= "04d";
+						$("#icon").html('<img src="http://openweathermap.org/img/w/' + o + '.png">');
+             	 });
+		})
+		
+    }  
+    //http://openweathermap.org/img/w/10d.png
+    </script>
+    
+      
+  </body>
+</html>			
+
